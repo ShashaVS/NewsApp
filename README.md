@@ -6,4 +6,4 @@ Technical stack and tools used:
 - Retrofit2 library;
 - Material Design.
 
-<img src="screenshots/screen.gif" width="420" vspace="20" hspace="5"> <img src="screenshots/device_04.png" width="420" vspace="20" hspace="5">
+<p align="center"><img src="screenshots/screen.gif" width="420" vspace="20" hspace="5" ></p>
