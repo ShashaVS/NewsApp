@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">GuardianClient</string>
+
+    <string name="search_title">Search</string>
+    <string name="shared_image">sharedImage</string>
+</resources>
