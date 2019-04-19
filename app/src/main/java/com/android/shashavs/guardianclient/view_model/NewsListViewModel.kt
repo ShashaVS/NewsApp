@@ -3,8 +3,10 @@ package com.android.shashavs.guardianclient.view_model
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.arch.lifecycle.ViewModel
+import android.arch.paging.LivePagedListBuilder
 import android.util.Log
 import com.android.shashavs.guardianclient.retrofit.ApiService
+import com.android.shashavs.guardianclient.retrofit.NetDataSourceFactory
 import com.android.shashavs.guardianclient.retrofit.objects.News
 import com.android.shashavs.guardianclient.retrofit.objects.PageResponse
 import io.reactivex.disposables.CompositeDisposable
@@ -12,6 +14,7 @@ import io.reactivex.schedulers.Schedulers
 import org.json.JSONException
 import retrofit2.Response
 import javax.inject.Inject
+import android.arch.paging.PagedList
 
 class NewsListViewModel @Inject constructor(private val apiService: ApiService) : ViewModel() {
     private val TAG = "NewsListViewModel"
@@ -25,10 +28,22 @@ class NewsListViewModel @Inject constructor(private val apiService: ApiService) 
     var position: Int = 0
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    var pagedList: PagedList<News>? = null
 
     fun getNewsLiveData(): LiveData<List<News>> = newsLiveData
 
     fun getNewsSize() = newsList.size
+
+    fun initDataSourceLiveData(apiKey : String) : LiveData<PagedList<News>> {
+        val factory = NetDataSourceFactory(apiService, apiKey, compositeDisposable)
+        val config = PagedList.Config.Builder()
+            .setEnablePlaceholders(false)
+            .setPageSize(10)
+            .build()
+
+        return LivePagedListBuilder(factory, config)
+            .build()
+    }
 
     fun getNewsList(apiKey : String) {
         apiService.getNewsList(currentPage?.plus(1), query, "thumbnail", apiKey)
@@ -138,6 +153,7 @@ class NewsListViewModel @Inject constructor(private val apiService: ApiService) 
 
     override fun onCleared() {
         compositeDisposable.clear()
+        pagedList = null
         newsList.clear()
         newsMap.clear()
         super.onCleared()

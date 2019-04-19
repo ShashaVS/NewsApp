@@ -1,8 +1,8 @@
 package com.android.shashavs.guardianclient.fragments.news_list
 
+import android.arch.paging.PagedListAdapter
 import android.os.Build
 import android.support.v4.view.ViewCompat
-import android.support.v7.recyclerview.extensions.AsyncListDiffer
 import android.support.v7.util.DiffUtil
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -18,16 +18,13 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_item.view.*
 import java.lang.Exception
 
-class NewsListAdapter(private val listener: (Int, ImageView?) -> Unit) : RecyclerView.Adapter<NewsListAdapter.ViewHolder>() {
+class NewsListAdapter(private val listener: (Int, ImageView?) -> Unit) :
+    PagedListAdapter<News, NewsListAdapter.ViewHolder>(object : DiffUtil.ItemCallback<News>() {
 
-    private var mDiffer: AsyncListDiffer<News>? = AsyncListDiffer(this, object: DiffUtil.ItemCallback<News>() {
         override fun areItemsTheSame(p0: News, p1: News) = p0.id == p1.id
-        override fun areContentsTheSame(p0: News, p1: News) = p0 == p1
-    })
 
-    fun submitList(data: List<News>) {
-        mDiffer?.submitList(ArrayList<News>(data))
-    }
+        override fun areContentsTheSame(p0: News, p1: News) = p0 == p1
+    }) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.fragment_item, parent, false)
@@ -35,11 +32,9 @@ class NewsListAdapter(private val listener: (Int, ImageView?) -> Unit) : Recycle
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = mDiffer?.currentList?.get(position)
+        val item = getItem(position)
         if(item != null) holder.bind(item)
     }
-
-    override fun getItemCount(): Int = mDiffer?.currentList?.size ?: 0
 
     inner class ViewHolder(private val mView: View) : RecyclerView.ViewHolder(mView) {
 

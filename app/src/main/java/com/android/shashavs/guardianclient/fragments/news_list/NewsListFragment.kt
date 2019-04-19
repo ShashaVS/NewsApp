@@ -2,6 +2,7 @@ package com.android.shashavs.guardianclient.fragments.news_list
 
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.arch.paging.PagedList
 import android.os.Build
 import android.os.Bundle
 import android.support.transition.TransitionInflater
@@ -9,7 +10,6 @@ import android.support.v4.app.SharedElementCallback
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.SearchView
 import android.view.*
 import android.widget.ImageView
@@ -34,7 +34,6 @@ class NewsListFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(NewsListViewModel::class.java)
-        viewModel.getNewsList(getString(R.string.api_key))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -44,20 +43,13 @@ class NewsListFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
-
-        viewModel.getNewsLiveData().observe(viewLifecycleOwner, Observer { newsList: List<News>? ->
-            if(newsList != null) {
-                if(list.adapter == null) init()
-                (list.adapter as NewsListAdapter).submitList(newsList)
-            }
-        })
-
+        init()
     }
 
     private fun init() {
-        prepareTransitions()
+//        prepareTransitions()
 
-        list.adapter = NewsListAdapter {position: Int, imageView: ImageView? ->
+        val adapter = NewsListAdapter {position: Int, imageView: ImageView? ->
             if(imageView != null) {
                 viewModel.position = position
 
@@ -81,16 +73,18 @@ class NewsListFragment : BaseFragment() {
             scrollToPosition(viewModel.position)
         }
         list.setHasFixedSize(true)
+        list.adapter = adapter
 
-        list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                if (!recyclerView.canScrollVertically(1)) {
-                    viewModel.getNewsList(getString(R.string.api_key))
+        if(viewModel.pagedList == null) {
+            viewModel.initDataSourceLiveData(getString(R.string.api_key)).observe(viewLifecycleOwner, Observer { pagedList: PagedList<News>? ->
+                if(pagedList != null) {
+                    viewModel.pagedList = pagedList
+                    adapter.submitList(pagedList)
                 }
-            }
-        })
-
+            })
+        } else {
+            adapter.submitList(viewModel.pagedList)
+        }
     }
 
     private fun prepareTransitions() {
