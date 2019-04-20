@@ -24,10 +24,10 @@ class NewsListViewModel @Inject constructor(private val apiService: ApiService) 
     private val newsMap: MutableMap<String, MutableLiveData<News>> = mutableMapOf()
 
     private var currentPage: Int? = null
-    private var query: String? = null
     var position: Int = 0
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private var factory: NetDataSourceFactory? = null
     var pagedList: PagedList<News>? = null
 
     fun getNewsLiveData(): LiveData<List<News>> = newsLiveData
@@ -35,47 +35,24 @@ class NewsListViewModel @Inject constructor(private val apiService: ApiService) 
     fun getNewsSize() = newsList.size
 
     fun initDataSourceLiveData(apiKey : String) : LiveData<PagedList<News>> {
-        val factory = NetDataSourceFactory(apiService, apiKey, compositeDisposable)
+        factory = NetDataSourceFactory(apiService, apiKey, compositeDisposable)
         val config = PagedList.Config.Builder()
             .setEnablePlaceholders(false)
             .setPageSize(10)
             .build()
 
-        return LivePagedListBuilder(factory, config)
+        return LivePagedListBuilder(factory!!, config)
             .build()
     }
 
-    fun getNewsList(apiKey : String) {
-        apiService.getNewsList(currentPage?.plus(1), query, "thumbnail", apiKey)
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
-            .subscribe(
-                { response: Response<PageResponse<News>>? ->
-                    if(response != null) {
-                        try {
-                            if(response.code() == 200) {
-                                val pageResponse = response.body()?.response
-                                val results = pageResponse?.results
-                                if(results != null) {
-                                    updateData(results, pageResponse.currentPage)
-                                }
-                            }
-                        } catch (e: JSONException) {
-                            Log.e(TAG, "getNewsList response JSONException: ", e)
-                        }
-                    }
-                },
-                { error -> Log.e(TAG, "getNewsList error: ", error) }
-            )
-            .apply {
-                compositeDisposable.add(this)
-            }
+    fun search(query: String? = null) {
+        if(factory?.query == query) return
+        factory?.query = query
+        pagedList?.dataSource?.invalidate()
     }
 
-    fun search(apiKey : String, query: String? = null) {
-        this.query = query
-        currentPage = 0
-        apiService.getNewsList(currentPage?.plus(1), query, "thumbnail", apiKey)
+    fun getNewsList(apiKey : String) {
+        apiService.getNewsList(currentPage?.plus(1), null, "thumbnail", apiKey)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe(

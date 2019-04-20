@@ -11,12 +11,13 @@ import retrofit2.Response
 
 class NetDataSource(private val apiService: ApiService,
                     private val apiKey: String,
-                    private val compositeDisposable: CompositeDisposable) : PageKeyedDataSource<Int, News>() {
+                    private val compositeDisposable: CompositeDisposable,
+                    private val query: String?) : PageKeyedDataSource<Int, News>() {
 
     private val TAG = "NetDataSource"
 
     override fun loadInitial(params: LoadInitialParams<Int>, callback: LoadInitialCallback<Int, News>) {
-        apiService.getNewsList(1, null, "thumbnail", apiKey)
+        apiService.getNewsList(1, query,"thumbnail", apiKey)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe(
@@ -43,8 +44,7 @@ class NetDataSource(private val apiService: ApiService,
     }
 
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, News>) {
-
-        apiService.getNewsList(params.key.plus(1),null, "thumbnail", apiKey)
+        apiService.getNewsList(params.key.plus(1), query,"thumbnail", apiKey)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
             .subscribe(

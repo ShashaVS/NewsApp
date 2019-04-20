@@ -29,7 +29,6 @@ class NewsListFragment : BaseFragment() {
     private lateinit var viewModel: NewsListViewModel
     @Inject
     lateinit var viewModelFactory: NewsListViewModelFactory
-    private lateinit var searchView: SearchView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -113,15 +112,29 @@ class NewsListFragment : BaseFragment() {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.menu, menu)
-        searchView = menu?.findItem(R.id.search)?.actionView as SearchView
+        val searchView = menu?.findItem(R.id.search)
 
-        searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+        (searchView?.actionView as SearchView).setOnQueryTextListener(object: SearchView.OnQueryTextListener {
+
             override fun onQueryTextSubmit(query: String?): Boolean {
-                viewModel.search(getString(R.string.api_key), query)
+                viewModel.search(query)
                 return true
             }
+
             override fun onQueryTextChange(query: String?) = false
         })
+
+        searchView.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
+
+            override fun onMenuItemActionExpand(item: MenuItem?) = true
+
+            override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
+                viewModel.search(null)
+                return true
+            }
+
+        })
+
     }
 
 }

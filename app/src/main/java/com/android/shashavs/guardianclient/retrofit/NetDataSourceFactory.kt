@@ -5,12 +5,13 @@ import com.android.shashavs.guardianclient.retrofit.objects.News
 import io.reactivex.disposables.CompositeDisposable
 
 class NetDataSourceFactory(private val apiService: ApiService,
-                           val apiKey: String,
-                           val compositeDisposable: CompositeDisposable) : DataSource.Factory<Int, News>() {
+                           private val apiKey: String,
+                           private val compositeDisposable: CompositeDisposable) : DataSource.Factory<Int, News>() {
 
     private val TAG = "NetDataSourceFactory"
+    var query: String? = null
 
     override fun create(): DataSource<Int, News> {
-        return NetDataSource(apiService, apiKey, compositeDisposable)
+        return NetDataSource(apiService, apiKey, compositeDisposable, query)
     }
 }
