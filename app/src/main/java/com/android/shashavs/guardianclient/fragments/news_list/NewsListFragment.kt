@@ -137,4 +137,9 @@ class NewsListFragment : BaseFragment() {
         })
     }
 
+    override fun onDestroyView() {
+        list.adapter = null
+        super.onDestroyView()
+    }
+
 }

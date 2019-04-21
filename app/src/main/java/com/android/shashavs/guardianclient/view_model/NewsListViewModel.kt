@@ -15,8 +15,10 @@ import org.json.JSONException
 import retrofit2.Response
 import javax.inject.Inject
 import android.arch.paging.PagedList
+import com.android.shashavs.guardianclient.repository.AppDatabase
 
-class NewsListViewModel @Inject constructor(private val apiService: ApiService) : ViewModel() {
+class NewsListViewModel @Inject constructor(private val apiService: ApiService,
+                                            private val appDatabase: AppDatabase) : ViewModel() {
     private val TAG = "NewsListViewModel"
 
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
