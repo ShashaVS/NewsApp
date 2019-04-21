@@ -1,7 +1,7 @@
 package com.android.shashavs.guardianclient.fragments.news_detail
 
-import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.arch.paging.PagedList
 import android.os.Build
 import android.os.Bundle
 import android.support.transition.TransitionInflater
@@ -38,23 +38,14 @@ class PagerFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        viewModel.getNewsLiveData().observe(viewLifecycleOwner, Observer { newsList: List<News>? ->
-            if(newsList != null) {
-                if(viewPager.adapter == null) {
-                    init(newsList.toMutableList())
-                } else {
-                    (viewPager.adapter as PagerAdapter).updateData(newsList)
-                }
-            }
-        })
+        if(viewModel.pagedList != null) init(viewModel.pagedList!!)
     }
 
-    private fun init(newsList: MutableList<News>) {
-
+    private fun init(pagedList: PagedList<News>) {
         prepareTransitions()
 
-        viewPager.adapter = PagerAdapter(childFragmentManager, newsList)
+        val adapter = PagerAdapter(childFragmentManager, pagedList)
+        viewPager.adapter = adapter
         viewPager.currentItem = viewModel.position
 
         viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
@@ -64,13 +55,12 @@ class PagerFragment : BaseFragment() {
             override fun onPageScrolled(position: Int, p1: Float, p2: Int) { }
 
             override fun onPageSelected(position: Int) {
-                if(position == viewModel.getNewsSize()-1) {
-                    viewModel.getNewsList(getString(R.string.api_key))
+                if(position == viewPager.adapter?.count?.minus(10)) {
+                    adapter.loadNextPage()
                 }
                 viewModel.position = viewPager.currentItem
             }
         })
-
     }
 
     private fun prepareTransitions() {

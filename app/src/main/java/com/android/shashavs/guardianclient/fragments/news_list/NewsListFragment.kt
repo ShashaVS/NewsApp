@@ -46,8 +46,6 @@ class NewsListFragment : BaseFragment() {
     }
 
     private fun init() {
-//        prepareTransitions()
-
         val adapter = NewsListAdapter {position: Int, imageView: ImageView? ->
             if(imageView != null) {
                 viewModel.position = position
@@ -68,9 +66,7 @@ class NewsListFragment : BaseFragment() {
             }
         }
 
-        list.layoutManager = LinearLayoutManager(context).apply {
-            scrollToPosition(viewModel.position)
-        }
+        list.layoutManager = LinearLayoutManager(context)
         list.setHasFixedSize(true)
         list.adapter = adapter
 
@@ -82,7 +78,12 @@ class NewsListFragment : BaseFragment() {
                 }
             })
         } else {
+            prepareTransitions()
             adapter.submitList(viewModel.pagedList)
+            // scroll to position
+            list.post {
+                (list.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(viewModel.position, 0)
+            }
         }
     }
 
@@ -134,7 +135,6 @@ class NewsListFragment : BaseFragment() {
             }
 
         })
-
     }
 
 }

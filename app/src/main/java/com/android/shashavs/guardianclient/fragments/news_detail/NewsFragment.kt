@@ -50,31 +50,30 @@ class NewsFragment : BaseFragment() {
             findNavController().popBackStack()
         }
 
-        if(!id.isNullOrEmpty()) {
-            viewModel.getNews(id!!, getString(R.string.api_key))?.observe(viewLifecycleOwner, Observer { news: News? ->
-                if(news != null) init(news)
-            })
+        if(position != null) {
+            val news = viewModel.pagedList?.get(position!!)
+            if(news != null) init(news)
         }
     }
 
     private fun init(news: News) {
         toolbar.title = news.webTitle
 
-        val bodyText = news.fields?.body
-        if(!bodyText.isNullOrEmpty()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                body.text = Html.fromHtml(bodyText, Html.FROM_HTML_MODE_LEGACY)
-            } else {
-                body.text = Html.fromHtml(bodyText)
+        if(!initDescription(news.fields?.body)) {
+            if(!id.isNullOrEmpty()) {
+                viewModel.loadDescription(id!!, getString(R.string.api_key)).observe(viewLifecycleOwner, Observer { desc: String? ->
+                    if(desc != null) {
+                        news.fields?.body = desc
+                        initDescription(desc)
+                    }
+                })
             }
         }
-
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             thumbnail.transitionName = news.id
         } else {
             ViewCompat.setTransitionName(thumbnail, news.id)
         }
-
         Picasso.get()
             .load(news.fields?.thumbnail)
             .into(thumbnail, object : Callback {
@@ -87,6 +86,18 @@ class NewsFragment : BaseFragment() {
                         parentFragment?.startPostponedEnterTransition()
                 }
             })
+    }
+
+    private fun initDescription(bodyText: String?) : Boolean {
+        if(bodyText != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                body.text = Html.fromHtml(bodyText, Html.FROM_HTML_MODE_LEGACY)
+            } else {
+                body.text = Html.fromHtml(bodyText)
+            }
+            return true
+        }
+        return false
     }
 
 }
