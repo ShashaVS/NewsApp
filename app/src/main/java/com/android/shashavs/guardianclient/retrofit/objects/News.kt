@@ -1,6 +1,12 @@
 package com.android.shashavs.guardianclient.retrofit.objects
 
-data class News(val id: String,
+import android.arch.persistence.room.Embedded
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
+
+@Entity(tableName = "news")
+data class News(@PrimaryKey val id: String,
+                var currentPage: Int?,
                 val type: String,
                 val sectionId: String,
                 val sectionName: String,
@@ -8,30 +14,13 @@ data class News(val id: String,
                 val webTitle: String,
                 val webUrl: String,
                 val apiUrl: String,
-                val isHosted: Boolean,
-                val pillarId: String,
-                val pillarName: String,
-                val fields: Fields?)
+                @Embedded val fields: Fields?)
 
-data class Fields(val trailText: String,
-                  val headline: String,
-                  val showInRelatedContent: Boolean,
+data class Fields(val trailText: String?,
+                  val headline: String?,
                   var body: String?,
-                  val lastModified: String,
-                  val hasStoryPackage: Boolean,
-                  val score: Float,
-                  val standfirst: String,
-                  val shortUrl: String,
-                  val thumbnail: String,
-                  val wordcount: Int,
-                  val commentable: Boolean,
-                  val isPremoderated: Boolean,
-                  val allowUgc: Boolean,
-                  val byline: String,
-                  val publication: String,
-                  val internalPageCode: String,
-                  val productionOffice: String,
-                  val shouldHideAdverts: Boolean,
-                  val liveBloggingNow: Boolean,
-                  val commentCloseDate: String,
-                  val starRating: Int)
+                  val score: Float?,
+                  val thumbnail: String?,
+                  val internalPageCode: String?,
+                  val productionOffice: String?,
+                  val starRating: Int?)

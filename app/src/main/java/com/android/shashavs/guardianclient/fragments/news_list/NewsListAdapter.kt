@@ -42,6 +42,8 @@ class NewsListAdapter(private val listener: (Int, ImageView?) -> Unit) :
         private val title: TextView = mView.title
         private val sectionName: TextView = mView.sectionName
 
+        private val test: TextView = mView.test
+
         fun bind(news: News) {
             title.text = news.webTitle
             sectionName.text = news.sectionName
@@ -64,6 +66,8 @@ class NewsListAdapter(private val listener: (Int, ImageView?) -> Unit) :
                 })
 
             mView.setOnClickListener { listener(adapterPosition, thumbnail) }
+
+            test.text = news.currentPage.toString().plus("/").plus(adapterPosition)
         }
     }
 

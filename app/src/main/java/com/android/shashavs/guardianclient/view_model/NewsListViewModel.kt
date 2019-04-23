@@ -1,40 +1,40 @@
 package com.android.shashavs.guardianclient.view_model
 
-import android.arch.lifecycle.LiveData
-import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
+import android.arch.lifecycle.*
+
 import android.arch.paging.LivePagedListBuilder
-import android.util.Log
-import com.android.shashavs.guardianclient.retrofit.ApiService
-import com.android.shashavs.guardianclient.retrofit.NetDataSourceFactory
+import com.android.shashavs.guardianclient.retrofit.AppDataSourceFactory
 import com.android.shashavs.guardianclient.retrofit.objects.News
-import com.android.shashavs.guardianclient.retrofit.objects.PageResponse
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
-import org.json.JSONException
-import retrofit2.Response
 import javax.inject.Inject
 import android.arch.paging.PagedList
-import com.android.shashavs.guardianclient.repository.AppDatabase
+import com.android.shashavs.guardianclient.repository.Repository
 
-class NewsListViewModel @Inject constructor(private val apiService: ApiService,
-                                            private val appDatabase: AppDatabase) : ViewModel() {
+class NewsListViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
     private val TAG = "NewsListViewModel"
 
-    private val compositeDisposable: CompositeDisposable = CompositeDisposable()
-    private var factory: NetDataSourceFactory? = null
+    private var factory: AppDataSourceFactory? = null
     var pagedList: PagedList<News>? = null
     var position: Int = 0
 
-    fun initDataSourceLiveData(apiKey : String) : LiveData<PagedList<News>> {
-        factory = NetDataSourceFactory(apiService, apiKey, compositeDisposable)
-        val config = PagedList.Config.Builder()
-            .setEnablePlaceholders(false)
-            .setPageSize(10)
-            .build()
+    val pagedConfig = PagedList.Config.Builder()
+        .setEnablePlaceholders(false)
+        .setPageSize(10)
+        .build()
 
-        return LivePagedListBuilder(factory!!, config).build()
+    fun initDataSourceLiveData(apiKey : String) : LiveData<PagedList<News>> {
+        factory = AppDataSourceFactory(repository, apiKey)
+
+        return LivePagedListBuilder(factory!!, pagedConfig)
+            .setBoundaryCallback(object : PagedList.BoundaryCallback<News>() {
+                override fun onItemAtEndLoaded(itemAtEnd: News) {
+                    super.onItemAtEndLoaded(itemAtEnd)
+                    repository.refresh(apiKey, itemAtEnd.currentPage?.plus(1))
+                }
+            })
+            .build()
     }
+
+    fun refresh(apiKey : String) = repository.refresh(apiKey, 1)
 
     fun search(query: String? = null) {
         if(factory?.query == query) return
@@ -42,7 +42,7 @@ class NewsListViewModel @Inject constructor(private val apiService: ApiService,
         pagedList?.dataSource?.invalidate()
     }
 
-    fun loadDescription(id: String, apiKey : String): LiveData<String> {
+/*    fun loadDescription(id: String, apiKey : String): LiveData<String> {
         val descLiveData: MutableLiveData<String> = MutableLiveData()
         apiService.getNews(id, "body", apiKey)
             .subscribeOn(Schedulers.io())
@@ -70,10 +70,10 @@ class NewsListViewModel @Inject constructor(private val apiService: ApiService,
                 compositeDisposable.add(this)
             }
         return descLiveData
-    }
+    }*/
 
     override fun onCleared() {
-        compositeDisposable.clear()
+        repository.clear()
         pagedList = null
         super.onCleared()
     }

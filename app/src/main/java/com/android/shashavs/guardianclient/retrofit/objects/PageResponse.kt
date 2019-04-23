@@ -10,5 +10,5 @@ data class PaginationData<T>(val status: String,
                              val currentPage: Int,
                              val pages: Int,
                              val orderBy: String,
-                             val results: List<T>,
+                             val results: List<T>?,
                              val content: T)
