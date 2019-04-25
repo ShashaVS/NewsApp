@@ -15,21 +15,24 @@ class NewsListViewModel @Inject constructor(private val repository: Repository) 
     private var factory: AppDataSourceFactory? = null
     var pagedList: PagedList<News>? = null
     var position: Int = 0
+    var pagedListLiveData: LiveData<PagedList<News>>? = null
 
-    val pagedConfig = PagedList.Config.Builder()
+    private val pagedConfig = PagedList.Config.Builder()
         .setEnablePlaceholders(false)
         .setPageSize(10)
         .build()
 
-    fun initDataSourceLiveData(apiKey : String) : LiveData<PagedList<News>> {
+    fun initDataSourceLiveData(apiKey : String) {
         factory = AppDataSourceFactory(repository, apiKey)
 
-        return LivePagedListBuilder(factory!!, pagedConfig)
+        pagedListLiveData = LivePagedListBuilder(factory!!, pagedConfig)
             .setBoundaryCallback(object : PagedList.BoundaryCallback<News>() {
+
                 override fun onItemAtEndLoaded(itemAtEnd: News) {
                     super.onItemAtEndLoaded(itemAtEnd)
                     repository.refresh(apiKey, itemAtEnd.currentPage?.plus(1))
                 }
+
             })
             .build()
     }
@@ -42,35 +45,7 @@ class NewsListViewModel @Inject constructor(private val repository: Repository) 
         pagedList?.dataSource?.invalidate()
     }
 
-/*    fun loadDescription(id: String, apiKey : String): LiveData<String> {
-        val descLiveData: MutableLiveData<String> = MutableLiveData()
-        apiService.getNews(id, "body", apiKey)
-            .subscribeOn(Schedulers.io())
-            .observeOn(Schedulers.io())
-            .subscribe(
-                { response: Response<PageResponse<News>>? ->
-                    if(response != null) {
-                        try {
-                            if(response.code() == 200) {
-                                val pageResponse = response.body()?.response
-                                val content = pageResponse?.content
-                                if(content != null) {
-                                    val description = content.fields?.body
-                                    descLiveData.postValue(description)
-                                }
-                            }
-                        } catch (e: JSONException) {
-                            Log.e(TAG, "loadDescription response JSONException: ", e)
-                        }
-                    }
-                },
-                { error -> Log.e(TAG, "loadDescription error: ", error) }
-            )
-            .apply {
-                compositeDisposable.add(this)
-            }
-        return descLiveData
-    }*/
+    fun getDescription(apiKey : String, id: String): LiveData<String> = repository.getDescription(apiKey, id)
 
     override fun onCleared() {
         repository.clear()

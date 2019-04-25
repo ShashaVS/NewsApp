@@ -72,20 +72,21 @@ class NewsListFragment : BaseFragment() {
         list.adapter = adapter
 
         if(viewModel.pagedList == null) {
-            viewModel.initDataSourceLiveData(getString(R.string.api_key)).observe(viewLifecycleOwner, Observer { pagedList: PagedList<News>? ->
-                if(pagedList != null) {
-                    viewModel.pagedList = pagedList
-                    adapter.submitList(pagedList)
-                }
-            })
+            viewModel.initDataSourceLiveData(getString(R.string.api_key))
         } else {
             prepareTransitions()
-            adapter.submitList(viewModel.pagedList)
             // scroll to position
             list.post {
                 (list.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(viewModel.position, 0)
             }
         }
+
+        viewModel.pagedListLiveData?.observe(viewLifecycleOwner, Observer { pagedList: PagedList<News>? ->
+            if(pagedList != null) {
+                viewModel.pagedList = pagedList
+                adapter.submitList(pagedList)
+            }
+        })
     }
 
     private fun prepareTransitions() {

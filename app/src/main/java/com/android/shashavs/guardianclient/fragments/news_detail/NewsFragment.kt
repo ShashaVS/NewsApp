@@ -1,5 +1,6 @@
 package com.android.shashavs.guardianclient.fragments.news_detail
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Build
 import android.os.Bundle
@@ -58,16 +59,10 @@ class NewsFragment : BaseFragment() {
     private fun init(news: News) {
         toolbar.title = news.webTitle
 
-        if(!initDescription(news.fields?.thumbnail)) {
-            if(!id.isNullOrEmpty()) {
-//                viewModel.loadDescription(id!!, getString(R.string.api_key)).observe(viewLifecycleOwner, Observer { desc: String? ->
-//                    if(desc != null) {
-//                        news.fields?.body = desc
-//                        initDescription(desc)
-//                    }
-//                })
-            }
-        }
+        viewModel.getDescription(getString(R.string.api_key), id!!).observe(viewLifecycleOwner, Observer { desc: String? ->
+            if(desc != null) initDescription(desc)
+        })
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             thumbnail.transitionName = news.id
         } else {
@@ -87,16 +82,14 @@ class NewsFragment : BaseFragment() {
             })
     }
 
-    private fun initDescription(bodyText: String?) : Boolean {
+    private fun initDescription(bodyText: String?) {
         if(bodyText != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                 body.text = Html.fromHtml(bodyText, Html.FROM_HTML_MODE_LEGACY)
             } else {
                 body.text = Html.fromHtml(bodyText)
             }
-            return true
         }
-        return false
     }
 
 }

@@ -1,9 +1,12 @@
 package com.android.shashavs.guardianclient.repository
 
+import android.arch.lifecycle.LiveData
+import android.arch.lifecycle.MutableLiveData
 import android.util.Log
 import com.android.shashavs.guardianclient.retrofit.ApiService
 import com.android.shashavs.guardianclient.retrofit.objects.News
 import com.android.shashavs.guardianclient.retrofit.objects.PageResponse
+import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 
@@ -70,6 +73,49 @@ class Repository @Inject constructor(private val apiService: ApiService,
             .apply {
                 compositeDisposable.add(this)
             }
+    }
+
+    fun getDescription(apiKey : String, id: String) : LiveData<String> {
+        val descLiveData = MutableLiveData<String>()
+        Observable.fromCallable { appDatabase.newsDao().description(id) }
+            .flatMap { news: News ->
+                val description = news.fields?.body
+                if(description == null) {
+                    apiService.getNews(id, "body,thumbnail", apiKey)
+                } else {
+                    Observable.fromCallable {description}
+                }
+            }
+            .subscribeOn(Schedulers.io())
+            .observeOn(Schedulers.io())
+            .subscribe(
+                { response: Any? ->
+                    if(response != null) {
+                        if(response is String) {
+                            descLiveData.postValue(response)
+                        } else if (response is Response<*>) {
+                            try {
+                                if(response.code() == 200) {
+                                    val pageResponse = (response.body() as PageResponse<*>).response
+                                    val content = pageResponse.content as News
+                                    val desc = content.fields?.body
+                                    if(desc != null) {
+                                        appDatabase.newsDao().addDesc(id, desc)
+                                        descLiveData.postValue(desc)
+                                    }
+                                }
+                            } catch (e: JSONException) {
+                                Log.e(TAG, "getDescription response JSONException: ", e)
+                            }
+                        }
+                    }
+                },
+                { error -> Log.e(TAG, "getDescription error: ", error) }
+            )
+            .apply {
+                compositeDisposable.add(this)
+            }
+        return descLiveData
     }
 
     fun cacheDataSource() = appDatabase.newsDao().getNews().create()
