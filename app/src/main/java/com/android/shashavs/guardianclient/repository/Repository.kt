@@ -78,8 +78,8 @@ class Repository @Inject constructor(private val apiService: ApiService,
     fun getDescription(apiKey : String, id: String) : LiveData<String> {
         val descLiveData = MutableLiveData<String>()
         Observable.fromCallable { appDatabase.newsDao().description(id) }
-            .flatMap { news: News ->
-                val description = news.fields?.body
+            .flatMap { newsList: List<News> ->
+                val description = newsList.firstOrNull()?.fields?.body
                 if(description == null) {
                     apiService.getNews(id, "body,thumbnail", apiKey)
                 } else {
@@ -100,8 +100,8 @@ class Repository @Inject constructor(private val apiService: ApiService,
                                     val content = pageResponse.content as News
                                     val desc = content.fields?.body
                                     if(desc != null) {
-                                        appDatabase.newsDao().addDesc(id, desc)
                                         descLiveData.postValue(desc)
+                                        appDatabase.newsDao().addDesc(id, desc)
                                     }
                                 }
                             } catch (e: JSONException) {

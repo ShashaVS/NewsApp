@@ -19,6 +19,6 @@ interface NewsDao {
     @Update
     fun updateNews(news: News) : Int
 
-    @Query("SELECT * FROM news WHERE id = :id")
-    fun description(id: String): News
+    @Query("SELECT * FROM news WHERE id = :id LIMIT 1")
+    fun description(id: String): List<News>
 }
