@@ -1,7 +1,6 @@
 package com.android.shashavs.guardianclient.fragments.news_detail
 
 import android.arch.lifecycle.ViewModelProviders
-import android.arch.paging.PagedList
 import android.os.Build
 import android.os.Bundle
 import android.support.transition.TransitionInflater
@@ -41,10 +40,10 @@ class PagerFragment : BaseFragment() {
         if(viewModel.pagedList != null) init(viewModel.pagedList!!)
     }
 
-    private fun init(pagedList: PagedList<News>) {
+    private fun init(newsList: List<News>) {
         prepareTransitions()
 
-        val adapter = PagerAdapter(childFragmentManager, pagedList)
+        val adapter = PagerAdapter(childFragmentManager, newsList)
         viewPager.adapter = adapter
         viewPager.currentItem = viewModel.position
 
@@ -55,9 +54,6 @@ class PagerFragment : BaseFragment() {
             override fun onPageScrolled(position: Int, p1: Float, p2: Int) { }
 
             override fun onPageSelected(position: Int) {
-                if(position == viewPager.adapter?.count?.minus(10)) {
-                    adapter.loadNextPage()
-                }
                 viewModel.position = viewPager.currentItem
             }
         })
