@@ -3,8 +3,8 @@ package com.android.shashavs.guardianclient.view_model
 import android.arch.lifecycle.*
 
 import android.arch.paging.LivePagedListBuilder
-import com.android.shashavs.guardianclient.retrofit.AppDataSourceFactory
-import com.android.shashavs.guardianclient.retrofit.objects.News
+import com.android.shashavs.guardianclient.repository.AppDataSourceFactory
+import com.android.shashavs.guardianclient.repository.retrofit.objects.News
 import javax.inject.Inject
 import android.arch.paging.PagedList
 import com.android.shashavs.guardianclient.repository.Repository

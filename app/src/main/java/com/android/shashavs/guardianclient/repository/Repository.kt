@@ -3,9 +3,10 @@ package com.android.shashavs.guardianclient.repository
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
-import com.android.shashavs.guardianclient.retrofit.ApiService
-import com.android.shashavs.guardianclient.retrofit.objects.News
-import com.android.shashavs.guardianclient.retrofit.objects.PageResponse
+import com.android.shashavs.guardianclient.repository.room.AppDatabase
+import com.android.shashavs.guardianclient.repository.retrofit.ApiService
+import com.android.shashavs.guardianclient.repository.retrofit.objects.News
+import com.android.shashavs.guardianclient.repository.retrofit.objects.PageResponse
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -15,7 +16,8 @@ import retrofit2.Response
 import javax.inject.Inject
 
 class Repository @Inject constructor(private val apiService: ApiService,
-                                     private val appDatabase: AppDatabase) {
+                                     private val appDatabase: AppDatabase
+) {
     private val TAG = "Repository"
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
 

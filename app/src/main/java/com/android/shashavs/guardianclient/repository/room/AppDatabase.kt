@@ -1,9 +1,9 @@
-package com.android.shashavs.guardianclient.repository
+package com.android.shashavs.guardianclient.repository.room
 
 import android.arch.persistence.room.Database
 import android.arch.persistence.room.RoomDatabase
-import com.android.shashavs.guardianclient.repository.dao.NewsDao
-import com.android.shashavs.guardianclient.retrofit.objects.News
+import com.android.shashavs.guardianclient.repository.room.dao.NewsDao
+import com.android.shashavs.guardianclient.repository.retrofit.objects.News
 
 @Database(entities = arrayOf(News::class), version = 1)
 abstract class AppDatabase : RoomDatabase() {

@@ -1,4 +1,4 @@
-package com.android.shashavs.guardianclient.retrofit
+package com.android.shashavs.guardianclient.repository.retrofit
 
 import android.content.Context
 import com.android.shashavs.guardianclient.R

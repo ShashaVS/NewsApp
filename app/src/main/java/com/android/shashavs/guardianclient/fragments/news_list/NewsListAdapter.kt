@@ -11,7 +11,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import com.android.shashavs.guardianclient.R
-import com.android.shashavs.guardianclient.retrofit.objects.News
+import com.android.shashavs.guardianclient.repository.retrofit.objects.News
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 

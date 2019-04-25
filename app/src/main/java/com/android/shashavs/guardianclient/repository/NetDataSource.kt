@@ -1,8 +1,7 @@
-package com.android.shashavs.guardianclient.retrofit
+package com.android.shashavs.guardianclient.repository
 
 import android.arch.paging.PageKeyedDataSource
-import com.android.shashavs.guardianclient.repository.Repository
-import com.android.shashavs.guardianclient.retrofit.objects.News
+import com.android.shashavs.guardianclient.repository.retrofit.objects.News
 
 class NetDataSource(private val repository: Repository,
                     private val apiKey: String,

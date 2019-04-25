@@ -15,7 +15,7 @@ import com.android.shashavs.guardianclient.R
 import com.android.shashavs.guardianclient.base.BaseFragment
 import com.android.shashavs.guardianclient.view_model.NewsListViewModel
 import com.android.shashavs.guardianclient.view_model.NewsListViewModelFactory
-import com.android.shashavs.guardianclient.retrofit.objects.News
+import com.android.shashavs.guardianclient.repository.retrofit.objects.News
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_news.*

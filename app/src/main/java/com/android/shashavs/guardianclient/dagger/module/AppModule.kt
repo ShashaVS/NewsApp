@@ -4,10 +4,10 @@ import android.arch.persistence.room.Room
 import android.content.Context
 import com.android.shashavs.guardianclient.App
 import com.android.shashavs.guardianclient.dagger.scope.AppScope
-import com.android.shashavs.guardianclient.repository.AppDatabase
+import com.android.shashavs.guardianclient.repository.room.AppDatabase
 import com.android.shashavs.guardianclient.repository.Repository
-import com.android.shashavs.guardianclient.retrofit.ApiService
-import com.android.shashavs.guardianclient.retrofit.Api
+import com.android.shashavs.guardianclient.repository.retrofit.ApiService
+import com.android.shashavs.guardianclient.repository.retrofit.Api
 import dagger.Module
 import dagger.Provides
 

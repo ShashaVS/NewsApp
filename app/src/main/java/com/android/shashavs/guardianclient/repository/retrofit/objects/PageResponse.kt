@@ -1,4 +1,4 @@
-package com.android.shashavs.guardianclient.retrofit.objects
+package com.android.shashavs.guardianclient.repository.retrofit.objects
 
 data class PageResponse<T>(val response: PaginationData<T>)
 

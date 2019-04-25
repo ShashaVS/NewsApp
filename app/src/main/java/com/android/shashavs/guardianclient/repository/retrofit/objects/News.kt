@@ -1,4 +1,4 @@
-package com.android.shashavs.guardianclient.retrofit.objects
+package com.android.shashavs.guardianclient.repository.retrofit.objects
 
 import android.arch.persistence.room.Embedded
 import android.arch.persistence.room.Entity
