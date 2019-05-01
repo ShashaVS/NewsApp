@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import com.android.shashavs.guardianclient.R
 import com.android.shashavs.guardianclient.repository.data_objects.News
+import com.android.shashavs.guardianclient.utils.DateTimeUtil
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 
@@ -46,7 +47,8 @@ class NewsListAdapter(private val listener: (Int, ImageView?) -> Unit) :
 
         fun bind(news: News) {
             title.text = news.webTitle
-            sectionName.text = news.sectionName
+            val date = DateTimeUtil.getDate(news.webPublicationDate)
+            sectionName.text = String.format(mView.context.getString(R.string.date_name), date, news.sectionName)
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 thumbnail.transitionName = news.id
