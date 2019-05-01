@@ -12,7 +12,7 @@
             android:layout_width="match_parent"
             android:layout_height="120dp"
             tools:src="@drawable/ic_thumbnail_placeholder"
-            android:scaleType="centerCrop"
+            tools:scaleType="centerCrop"
             tools:ignore="ContentDescription"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

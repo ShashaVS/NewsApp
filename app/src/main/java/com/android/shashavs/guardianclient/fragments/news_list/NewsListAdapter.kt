@@ -13,6 +13,7 @@ import android.widget.TextView
 import com.android.shashavs.guardianclient.R
 import com.android.shashavs.guardianclient.repository.data_objects.News
 import com.android.shashavs.guardianclient.utils.DateTimeUtil
+import com.android.shashavs.guardianclient.utils.RoundTransformation
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 
@@ -58,6 +59,9 @@ class NewsListAdapter(private val listener: (Int, ImageView?) -> Unit) :
 
             Picasso.get()
                 .load(news.fields?.thumbnail)
+                .fit()
+                .centerCrop()
+                .transform(RoundTransformation())
                 .into(thumbnail, object : Callback {
                     override fun onSuccess() {
                         listener(adapterPosition, null)
