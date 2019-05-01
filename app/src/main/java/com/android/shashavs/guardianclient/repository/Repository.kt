@@ -20,11 +20,14 @@ class Repository @Inject constructor(private val apiService: ApiService,
 ) {
     private val TAG = "Repository"
     private val compositeDisposable: CompositeDisposable = CompositeDisposable()
+    private val refreshLiveData = MutableLiveData<Boolean>()
 
     fun refresh(apiKey : String, page: Int? = null) {
         apiService.getNewsList(page, null,"thumbnail", apiKey)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
+            .doOnSubscribe { refreshLiveData.postValue(true) }
+            .doFinally { refreshLiveData.postValue(false) }
             .subscribe(
                 { response: Response<PageResponse<News>>? ->
                     if(response != null) {
@@ -53,6 +56,8 @@ class Repository @Inject constructor(private val apiService: ApiService,
         apiService.getNewsList(page, query,"thumbnail", apiKey)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
+            .doOnSubscribe { refreshLiveData.postValue(true) }
+            .doFinally { refreshLiveData.postValue(false) }
             .subscribe(
                 { response: Response<PageResponse<News>>? ->
                     if(response != null) {
@@ -119,6 +124,8 @@ class Repository @Inject constructor(private val apiService: ApiService,
             }
         return descLiveData
     }
+
+    fun getRefreshLiveData(): LiveData<Boolean> = refreshLiveData
 
     fun cacheDataSource() = appDatabase.newsDao().getNews().create()
 

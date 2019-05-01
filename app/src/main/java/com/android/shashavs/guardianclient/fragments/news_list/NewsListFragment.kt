@@ -81,11 +81,25 @@ class NewsListFragment : BaseFragment() {
             }
         }
 
+        swipeRefresh.setColorSchemeResources(
+            android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light)
+
+        swipeRefresh.setOnRefreshListener {
+            viewModel.refresh(getString(R.string.api_key))
+        }
+
         viewModel.pagedListLiveData?.observe(viewLifecycleOwner, Observer { pagedList: PagedList<News>? ->
             if(pagedList != null) {
                 viewModel.pagedList = pagedList
                 adapter.submitList(pagedList)
             }
+        })
+
+        viewModel.refreshLiveData().observe(viewLifecycleOwner, Observer { refresh: Boolean? ->
+            swipeRefresh.isRefreshing = refresh ?: false
         })
     }
 

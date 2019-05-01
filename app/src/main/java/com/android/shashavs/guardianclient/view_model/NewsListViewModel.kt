@@ -47,6 +47,8 @@ class NewsListViewModel @Inject constructor(private val repository: Repository) 
 
     fun getDescription(apiKey : String, id: String): LiveData<String> = repository.getDescription(apiKey, id)
 
+    fun refreshLiveData() = repository.getRefreshLiveData()
+
     override fun onCleared() {
         repository.clear()
         pagedList = null
