@@ -20,7 +20,7 @@ import com.android.shashavs.guardianclient.R
 import com.android.shashavs.guardianclient.base.BaseFragment
 import com.android.shashavs.guardianclient.view_model.NewsListViewModel
 import com.android.shashavs.guardianclient.view_model.NewsListViewModelFactory
-import com.android.shashavs.guardianclient.repository.retrofit.objects.News
+import com.android.shashavs.guardianclient.repository.data_objects.News
 import kotlinx.android.synthetic.main.fragment_item_list.*
 import javax.inject.Inject
 

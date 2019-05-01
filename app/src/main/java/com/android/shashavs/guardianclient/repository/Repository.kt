@@ -3,10 +3,11 @@ package com.android.shashavs.guardianclient.repository
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.MutableLiveData
 import android.util.Log
+import com.android.shashavs.guardianclient.repository.data_objects.Descripton
 import com.android.shashavs.guardianclient.repository.room.AppDatabase
 import com.android.shashavs.guardianclient.repository.retrofit.ApiService
-import com.android.shashavs.guardianclient.repository.retrofit.objects.News
-import com.android.shashavs.guardianclient.repository.retrofit.objects.PageResponse
+import com.android.shashavs.guardianclient.repository.data_objects.News
+import com.android.shashavs.guardianclient.repository.data_objects.PageResponse
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -82,38 +83,36 @@ class Repository @Inject constructor(private val apiService: ApiService,
             }
     }
 
-    fun getDescription(apiKey : String, id: String) : LiveData<String> {
-        val descLiveData = MutableLiveData<String>()
+    fun getDescription(apiKey : String, id: String) : LiveData<Descripton> {
+        val descLiveData = MutableLiveData<Descripton>()
+        var description: String? = null
+
         Observable.fromCallable { appDatabase.newsDao().description(id) }
             .flatMap { newsList: List<News> ->
-                val description = newsList.firstOrNull()?.fields?.body
+                description = newsList.firstOrNull()?.fields?.body
                 if(description == null) {
                     apiService.getNews(id, "body,thumbnail", apiKey)
                 } else {
-                    Observable.fromCallable {description}
+                    Observable.empty()
                 }
             }
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
+            .doOnSubscribe { descLiveData.postValue(Descripton(true)) }
+            .doFinally { descLiveData.postValue(Descripton(false, description)) }
             .subscribe(
-                { response: Any? ->
+                { response: Response<PageResponse<News>>? ->
                     if(response != null) {
-                        if(response is String) {
-                            descLiveData.postValue(response)
-                        } else if (response is Response<*>) {
-                            try {
-                                if(response.code() == 200) {
-                                    val pageResponse = (response.body() as PageResponse<*>).response
-                                    val content = pageResponse.content as News
-                                    val desc = content.fields?.body
-                                    if(desc != null) {
-                                        descLiveData.postValue(desc)
-                                        appDatabase.newsDao().addDesc(id, desc)
-                                    }
+                        try {
+                            if(response.code() == 200) {
+                                val pageResponse = response.body()?.response
+                                description = pageResponse?.content?.fields?.body
+                                if(description != null) {
+                                    appDatabase.newsDao().addDesc(id, description!!)
                                 }
-                            } catch (e: JSONException) {
-                                Log.e(TAG, "getDescription response JSONException: ", e)
                             }
+                        } catch (e: JSONException) {
+                            Log.e(TAG, "getDescription response JSONException: ", e)
                         }
                     }
                 },

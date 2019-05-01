@@ -4,10 +4,11 @@ import android.arch.lifecycle.*
 
 import android.arch.paging.LivePagedListBuilder
 import com.android.shashavs.guardianclient.repository.AppDataSourceFactory
-import com.android.shashavs.guardianclient.repository.retrofit.objects.News
+import com.android.shashavs.guardianclient.repository.data_objects.News
 import javax.inject.Inject
 import android.arch.paging.PagedList
 import com.android.shashavs.guardianclient.repository.Repository
+import com.android.shashavs.guardianclient.repository.data_objects.Descripton
 
 class NewsListViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
     private val TAG = "NewsListViewModel"
@@ -45,7 +46,7 @@ class NewsListViewModel @Inject constructor(private val repository: Repository) 
         pagedList?.dataSource?.invalidate()
     }
 
-    fun getDescription(apiKey : String, id: String): LiveData<String> = repository.getDescription(apiKey, id)
+    fun getDescription(apiKey : String, id: String): LiveData<Descripton> = repository.getDescription(apiKey, id)
 
     fun refreshLiveData() = repository.getRefreshLiveData()
 

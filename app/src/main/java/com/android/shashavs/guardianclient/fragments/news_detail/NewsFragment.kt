@@ -13,9 +13,10 @@ import androidx.navigation.fragment.findNavController
 
 import com.android.shashavs.guardianclient.R
 import com.android.shashavs.guardianclient.base.BaseFragment
+import com.android.shashavs.guardianclient.repository.data_objects.Descripton
 import com.android.shashavs.guardianclient.view_model.NewsListViewModel
 import com.android.shashavs.guardianclient.view_model.NewsListViewModelFactory
-import com.android.shashavs.guardianclient.repository.retrofit.objects.News
+import com.android.shashavs.guardianclient.repository.data_objects.News
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_news.*
@@ -59,8 +60,8 @@ class NewsFragment : BaseFragment() {
     private fun init(news: News) {
         toolbar.title = news.webTitle
 
-        viewModel.getDescription(getString(R.string.api_key), id!!).observe(viewLifecycleOwner, Observer { desc: String? ->
-            if(desc != null) initDescription(desc)
+        viewModel.getDescription(getString(R.string.api_key), id!!).observe(viewLifecycleOwner, Observer { descripton: Descripton? ->
+            if(descripton != null) initDescription(descripton)
         })
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -82,13 +83,15 @@ class NewsFragment : BaseFragment() {
             })
     }
 
-    private fun initDescription(bodyText: String?) {
-        if(bodyText != null) {
+    private fun initDescription(descripton: Descripton) {
+        progressBar.visibility = if(descripton.refresh) View.VISIBLE else View.GONE
+        if(descripton.data != null) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                body.text = Html.fromHtml(bodyText, Html.FROM_HTML_MODE_LEGACY)
+                body.text = Html.fromHtml(descripton.data, Html.FROM_HTML_MODE_LEGACY)
             } else {
-                body.text = Html.fromHtml(bodyText)
+                body.text = Html.fromHtml(descripton.data)
             }
+            body.visibility = View.VISIBLE
         }
     }
 

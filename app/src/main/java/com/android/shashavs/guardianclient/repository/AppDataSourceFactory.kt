@@ -1,7 +1,7 @@
 package com.android.shashavs.guardianclient.repository
 
 import android.arch.paging.DataSource
-import com.android.shashavs.guardianclient.repository.retrofit.objects.News
+import com.android.shashavs.guardianclient.repository.data_objects.News
 
 class AppDataSourceFactory(private val repository: Repository,
                            private val apiKey: String) : DataSource.Factory<Int, News>() {

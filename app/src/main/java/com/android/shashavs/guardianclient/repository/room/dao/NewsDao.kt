@@ -2,7 +2,7 @@ package com.android.shashavs.guardianclient.repository.room.dao
 
 import android.arch.paging.DataSource
 import android.arch.persistence.room.*
-import com.android.shashavs.guardianclient.repository.retrofit.objects.News
+import com.android.shashavs.guardianclient.repository.data_objects.News
 
 @Dao
 interface NewsDao {
