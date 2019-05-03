@@ -3,12 +3,14 @@ package com.android.shashavs.guardianclient.fragments.news_list
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
 import android.arch.paging.PagedList
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.support.transition.TransitionInflater
 import android.support.v4.app.SharedElementCallback
 import android.support.v4.view.ViewCompat
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.SearchView
 import android.view.*
@@ -29,9 +31,11 @@ class NewsListFragment : BaseFragment() {
     private lateinit var viewModel: NewsListViewModel
     @Inject
     lateinit var viewModelFactory: NewsListViewModelFactory
+    private var isTablet = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        isTablet = isTablet()
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(NewsListViewModel::class.java)
         viewModel.refresh(getString(R.string.api_key))
     }
@@ -67,7 +71,7 @@ class NewsListFragment : BaseFragment() {
             }
         }
 
-        list.layoutManager = LinearLayoutManager(context)
+        list.layoutManager = if(isTablet) GridLayoutManager(context, 2) else LinearLayoutManager(context)
         list.setHasFixedSize(true)
         list.adapter = adapter
 
@@ -77,7 +81,7 @@ class NewsListFragment : BaseFragment() {
             prepareTransitions()
             // scroll to position
             list.post {
-                (list.layoutManager as LinearLayoutManager).scrollToPositionWithOffset(viewModel.position, 0)
+                list.layoutManager?.scrollToPosition(viewModel.position)
             }
         }
 
@@ -102,6 +106,9 @@ class NewsListFragment : BaseFragment() {
             swipeRefresh.isRefreshing = refresh ?: false
         })
     }
+
+    private fun isTablet() =
+        resources.configuration.screenLayout.and(Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_LARGE
 
     private fun prepareTransitions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

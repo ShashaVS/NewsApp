@@ -9,7 +9,7 @@ class PagerAdapter(fm: FragmentManager, private val newsList: List<News>) : Frag
 
     override fun getItem(position: Int) =
         NewsFragment().apply { arguments = Bundle().apply{
-            putString("id", newsList[position].id)
+            putSerializable("news", newsList[position])
             putInt("position", position)
         } }
 

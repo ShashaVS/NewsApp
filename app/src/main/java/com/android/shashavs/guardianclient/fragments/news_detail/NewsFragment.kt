@@ -28,15 +28,15 @@ class NewsFragment : BaseFragment() {
     private lateinit var viewModel: NewsListViewModel
     @Inject
     lateinit var viewModelFactory: NewsListViewModelFactory
-    private var id: String? = null
     private var position: Int? = null
+    private var news: News? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(NewsListViewModel::class.java)
         arguments?.let {
-            id = it.getString("id")
             position = it.getInt("position")
+            news = it.getSerializable("news") as News?
         }
     }
 
@@ -50,27 +50,24 @@ class NewsFragment : BaseFragment() {
         toolbar.setNavigationOnClickListener {
             findNavController().popBackStack()
         }
-
-        if(position != null) {
-            val news = viewModel.pagedList?.get(position!!)
-            if(news != null) init(news)
-        }
+        if(news != null) init()
     }
 
-    private fun init(news: News) {
-        toolbar.title = news.webTitle
+    private fun init() {
+        toolbar.title = news?.webTitle
 
-        viewModel.getDescription(getString(R.string.api_key), id!!).observe(viewLifecycleOwner, Observer { descripton: Descripton? ->
-            if(descripton != null) initDescription(descripton)
-        })
+        viewModel.getDescription(getString(R.string.api_key), news?.id!!)
+            .observe(viewLifecycleOwner, Observer { descripton: Descripton? ->
+                if(descripton != null) initDescription(descripton)
+            })
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            thumbnail.transitionName = news.id
+            thumbnail.transitionName = news?.id
         } else {
-            ViewCompat.setTransitionName(thumbnail, news.id)
+            ViewCompat.setTransitionName(thumbnail, news?.id)
         }
         Picasso.get()
-            .load(news.fields?.thumbnail)
+            .load(news?.fields?.thumbnail)
             .into(thumbnail, object : Callback {
                 override fun onSuccess() {
                     if(position == viewModel.position)
@@ -81,6 +78,8 @@ class NewsFragment : BaseFragment() {
                         parentFragment?.startPostponedEnterTransition()
                 }
             })
+
+        test.text = news?.currentPage.toString().plus("/").plus(position)
     }
 
     private fun initDescription(descripton: Descripton) {

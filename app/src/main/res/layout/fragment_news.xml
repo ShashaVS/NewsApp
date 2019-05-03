@@ -34,6 +34,15 @@
                     tools:src="@drawable/ic_thumbnail_placeholder"
                     app:layout_collapseMode="parallax"/>
 
+            <TextView
+                    android:id="@+id/test"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:textColor="@android:color/holo_green_light"
+                    tools:text="TEST"
+                    android:layout_gravity="end"/>
+
             <android.support.v7.widget.Toolbar
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
@@ -55,8 +64,7 @@
         
         <RelativeLayout 
                 android:layout_width="match_parent" 
-                android:layout_height="match_parent"
-                android:animateLayoutChanges="true">
+                android:layout_height="match_parent">
 
             <TextView
                     android:id="@+id/body"
