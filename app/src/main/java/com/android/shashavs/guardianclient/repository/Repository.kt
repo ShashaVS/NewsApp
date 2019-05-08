@@ -38,7 +38,7 @@ class Repository @Inject constructor(private val apiService: ApiService,
                                 val results = pageResponse?.results
                                 if(results != null) {
                                     results.forEach { news: News -> news.currentPage = pageResponse.currentPage }
-                                    appDatabase.newsDao().insert(results)
+                                    val ids = appDatabase.newsDao().insert(results)
                                 }
                             }
                         } catch (e: JSONException) {

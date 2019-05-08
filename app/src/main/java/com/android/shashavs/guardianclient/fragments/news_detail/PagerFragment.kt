@@ -1,12 +1,13 @@
 package com.android.shashavs.guardianclient.fragments.news_detail
 
+import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.arch.paging.PagedList
 import android.os.Build
 import android.os.Bundle
 import android.support.transition.TransitionInflater
 import android.support.v4.app.Fragment
 import android.support.v4.app.SharedElementCallback
-import android.support.v4.view.ViewPager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,26 +38,21 @@ class PagerFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        if(viewModel.pagedList != null) init(viewModel.pagedList!!)
-    }
 
-    private fun init(newsList: List<News>) {
         prepareTransitions()
 
-        val adapter = PagerAdapter(childFragmentManager, newsList)
-        viewPager.adapter = adapter
-        viewPager.currentItem = viewModel.position
-
-        viewPager.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-
-            override fun onPageScrollStateChanged(position: Int) { }
-
-            override fun onPageScrolled(position: Int, p1: Float, p2: Int) { }
-
-            override fun onPageSelected(position: Int) {
-                viewModel.position = viewPager.currentItem
+        viewModel.pagedListLiveData?.observe(viewLifecycleOwner, Observer { pagedList: PagedList<News>? ->
+            if(viewPager.adapter == null) {
+                // init
+                viewPager.adapter = PagerAdapter(childFragmentManager).also {
+                    it.submit(pagedList)
+                }
+                viewPager.currentItem = viewModel.position
+            } else {
+                (viewPager.adapter as PagerAdapter).submit(pagedList)
             }
         })
+
     }
 
     private fun prepareTransitions() {
@@ -73,7 +69,6 @@ class PagerFragment : BaseFragment() {
                 sharedElements?.put(names?.get(0)!!, view.findViewById(R.id.thumbnail))
             }
         })
-
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -19,7 +19,7 @@ class NewsListViewModel @Inject constructor(private val repository: Repository) 
     var pagedListLiveData: LiveData<PagedList<News>>? = null
 
     private val pagedConfig = PagedList.Config.Builder()
-        .setEnablePlaceholders(false)
+        .setPrefetchDistance(15)
         .setPageSize(10)
         .build()
 
@@ -28,17 +28,17 @@ class NewsListViewModel @Inject constructor(private val repository: Repository) 
 
         pagedListLiveData = LivePagedListBuilder(factory!!, pagedConfig)
             .setBoundaryCallback(object : PagedList.BoundaryCallback<News>() {
-
                 override fun onItemAtEndLoaded(itemAtEnd: News) {
                     super.onItemAtEndLoaded(itemAtEnd)
                     repository.refresh(apiKey, itemAtEnd.currentPage?.plus(1))
                 }
-
             })
             .build()
     }
 
-    fun refresh(apiKey : String) = repository.refresh(apiKey, 1)
+    fun initRefresh(apiKey : String) = repository.refresh(apiKey, 1)
+
+    fun refreshLiveData() = repository.getRefreshLiveData()
 
     fun search(query: String? = null) {
         if(factory?.query == query) return
@@ -47,8 +47,6 @@ class NewsListViewModel @Inject constructor(private val repository: Repository) 
     }
 
     fun getDescription(apiKey : String, id: String): LiveData<Descripton> = repository.getDescription(apiKey, id)
-
-    fun refreshLiveData() = repository.getRefreshLiveData()
 
     override fun onCleared() {
         repository.clear()

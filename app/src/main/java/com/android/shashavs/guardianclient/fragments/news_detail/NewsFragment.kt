@@ -68,6 +68,8 @@ class NewsFragment : BaseFragment() {
         }
         Picasso.get()
             .load(news?.fields?.thumbnail)
+            .fit()
+            .centerCrop()
             .into(thumbnail, object : Callback {
                 override fun onSuccess() {
                     if(position == viewModel.position)
