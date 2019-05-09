@@ -14,7 +14,6 @@ class NewsListViewModel @Inject constructor(private val repository: Repository) 
     private val TAG = "NewsListViewModel"
 
     private var factory: AppDataSourceFactory? = null
-    var pagedList: PagedList<News>? = null
     var position: Int = 0
     var pagedListLiveData: LiveData<PagedList<News>>? = null
 
@@ -43,14 +42,13 @@ class NewsListViewModel @Inject constructor(private val repository: Repository) 
     fun search(query: String? = null) {
         if(factory?.query == query) return
         factory?.query = query
-        pagedList?.dataSource?.invalidate()
+        pagedListLiveData?.value?.dataSource?.invalidate()
     }
 
     fun getDescription(apiKey : String, id: String): LiveData<Descripton> = repository.getDescription(apiKey, id)
 
     override fun onCleared() {
         repository.clear()
-        pagedList = null
         super.onCleared()
     }
 }

@@ -53,7 +53,7 @@ class Repository @Inject constructor(private val apiService: ApiService,
             }
     }
 
-    fun search(apiKey : String, page: Int? = null, query: String?, listener : (List<News>, Int) -> Unit) {
+    fun search(apiKey : String, page: Int? = null, query: String?, listener : (List<News>, Int, Int) -> Unit) {
         apiService.getNewsList(page, query,"thumbnail", apiKey)
             .subscribeOn(Schedulers.io())
             .observeOn(Schedulers.io())
@@ -68,7 +68,7 @@ class Repository @Inject constructor(private val apiService: ApiService,
                                 val results = pageResponse?.results
                                 if(results != null) {
                                     results.forEach { news: News -> news.currentPage = pageResponse.currentPage }
-                                    listener(results, pageResponse.currentPage)
+                                    listener(results, pageResponse.currentPage, pageResponse.total)
                                 }
                             }
                         } catch (e: JSONException) {

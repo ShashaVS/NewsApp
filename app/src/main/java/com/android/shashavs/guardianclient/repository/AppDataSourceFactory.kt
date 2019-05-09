@@ -13,6 +13,6 @@ class AppDataSourceFactory(private val repository: Repository,
         return if(query.isNullOrEmpty())
             repository.cacheDataSource()
         else
-            NetDataSource(repository, apiKey, query)
+            NetPositionalDataSource(repository, apiKey, query)
     }
 }
