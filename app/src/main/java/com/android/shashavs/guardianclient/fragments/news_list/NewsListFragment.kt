@@ -37,7 +37,7 @@ class NewsListFragment : BaseFragment() {
         super.onCreate(savedInstanceState)
         isTablet = isTablet()
         viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(NewsListViewModel::class.java)
-        viewModel.refresh(getString(R.string.api_key))
+        viewModel.initRefresh(getString(R.string.api_key))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -75,7 +75,7 @@ class NewsListFragment : BaseFragment() {
         list.setHasFixedSize(true)
         list.adapter = adapter
 
-        if(viewModel.pagedList == null) {
+        if(viewModel.pagedListLiveData == null) {
             viewModel.initDataSourceLiveData(getString(R.string.api_key))
         } else {
             prepareTransitions()
@@ -92,14 +92,11 @@ class NewsListFragment : BaseFragment() {
             android.R.color.holo_red_light)
 
         swipeRefresh.setOnRefreshListener {
-            viewModel.refresh(getString(R.string.api_key))
+            viewModel.initRefresh(getString(R.string.api_key))
         }
 
         viewModel.pagedListLiveData?.observe(viewLifecycleOwner, Observer { pagedList: PagedList<News>? ->
-            if(pagedList != null) {
-                viewModel.pagedList = pagedList
-                adapter.submitList(pagedList)
-            }
+            adapter.submitList(pagedList)
         })
 
         viewModel.refreshLiveData().observe(viewLifecycleOwner, Observer { refresh: Boolean? ->
@@ -156,7 +153,6 @@ class NewsListFragment : BaseFragment() {
                 viewModel.search(null)
                 return true
             }
-
         })
     }
 

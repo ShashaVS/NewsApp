@@ -72,9 +72,7 @@ class PagerFragment : BaseFragment() {
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        if(viewPager != null) {
-            viewModel.position = viewPager.currentItem
-        }
+        viewModel.position = viewPager.currentItem
         super.onSaveInstanceState(outState)
     }
 

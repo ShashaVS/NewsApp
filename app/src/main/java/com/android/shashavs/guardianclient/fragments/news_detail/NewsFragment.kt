@@ -48,6 +48,7 @@ class NewsFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         toolbar.setNavigationOnClickListener {
+            viewModel.position = position ?: 0
             findNavController().popBackStack()
         }
         if(news != null) init()
