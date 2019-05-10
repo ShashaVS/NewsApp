@@ -20,7 +20,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_item.view.*
 import java.lang.Exception
 
-class NewsListAdapter(private val listener: (Int, ImageView?) -> Unit) :
+class NewsListAdapter(private inline val listener: (Int, ImageView?) -> Unit) :
     PagedListAdapter<News, NewsListAdapter.ViewHolder>(object : DiffUtil.ItemCallback<News>() {
 
         override fun areItemsTheSame(p0: News, p1: News) = p0.id == p1.id
