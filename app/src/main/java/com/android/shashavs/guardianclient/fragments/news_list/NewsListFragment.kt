@@ -32,6 +32,7 @@ class NewsListFragment : BaseFragment() {
     @Inject
     lateinit var viewModelFactory: NewsListViewModelFactory
     private var isTablet = false
+    private var searchView: MenuItem? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +52,7 @@ class NewsListFragment : BaseFragment() {
     }
 
     private fun init() {
-        val adapter = NewsListAdapter {position: Int, imageView: ImageView? ->
+        NewsListAdapter {position: Int, imageView: ImageView? ->
             if(imageView != null) {
                 viewModel.position = position
 
@@ -69,11 +70,12 @@ class NewsListFragment : BaseFragment() {
             } else if(position == viewModel.position) {
                 startPostponedEnterTransition()
             }
+        }.apply {
+            list.adapter = this
         }
 
         list.layoutManager = if(isTablet) GridLayoutManager(context, 2) else LinearLayoutManager(context)
         list.setHasFixedSize(true)
-        list.adapter = adapter
 
         if(viewModel.pagedListLiveData == null) {
             viewModel.initDataSourceLiveData(getString(R.string.api_key))
@@ -96,7 +98,7 @@ class NewsListFragment : BaseFragment() {
         }
 
         viewModel.pagedListLiveData?.observe(viewLifecycleOwner, Observer { pagedList: PagedList<News>? ->
-            adapter.submitList(pagedList)
+            (list.adapter as NewsListAdapter).submitList(pagedList)
         })
 
         viewModel.refreshLiveData().observe(viewLifecycleOwner, Observer { refresh: Boolean? ->
@@ -133,31 +135,35 @@ class NewsListFragment : BaseFragment() {
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater?.inflate(R.menu.menu, menu)
-        val searchView = menu?.findItem(R.id.search)
+        searchView = menu?.findItem(R.id.search)
 
         (searchView?.actionView as SearchView).setOnQueryTextListener(object: SearchView.OnQueryTextListener {
-
             override fun onQueryTextSubmit(query: String?): Boolean {
                 viewModel.search(query)
                 return true
             }
-
             override fun onQueryTextChange(query: String?) = false
         })
 
-        searchView.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
-
-            override fun onMenuItemActionExpand(item: MenuItem?) = true
-
+        searchView?.setOnActionExpandListener(object : MenuItem.OnActionExpandListener {
             override fun onMenuItemActionCollapse(item: MenuItem?): Boolean {
                 viewModel.search(null)
                 return true
             }
+            override fun onMenuItemActionExpand(item: MenuItem?) = true
         })
     }
 
-    override fun onDestroyView() {
+    private fun clear() {
         list.adapter = null
+        setExitSharedElementCallback(null)
+        swipeRefresh.setOnRefreshListener(null)
+        (searchView?.actionView as SearchView).setOnQueryTextListener(null)
+        searchView?.setOnActionExpandListener(null)
+    }
+
+    override fun onDestroyView() {
+        clear()
         super.onDestroyView()
     }
 

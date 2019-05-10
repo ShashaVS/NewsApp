@@ -49,6 +49,8 @@ class NewsListViewModel @Inject constructor(private val repository: Repository) 
 
     override fun onCleared() {
         repository.clear()
+        factory = null
+        pagedListLiveData = null
         super.onCleared()
     }
 }
