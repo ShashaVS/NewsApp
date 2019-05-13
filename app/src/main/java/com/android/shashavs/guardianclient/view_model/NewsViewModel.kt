@@ -10,10 +10,10 @@ import android.arch.paging.PagedList
 import com.android.shashavs.guardianclient.repository.Repository
 import com.android.shashavs.guardianclient.repository.data_objects.Descripton
 
-class NewsListViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
+class NewsViewModel @Inject constructor(private val repository: Repository) : ViewModel() {
     private val TAG = "NewsListViewModel"
 
-    private var factory: AppDataSourceFactory? = null
+    var factory: AppDataSourceFactory? = null
     var position: Int = 0
     var pagedListLiveData: LiveData<PagedList<News>>? = null
 
@@ -39,18 +39,18 @@ class NewsListViewModel @Inject constructor(private val repository: Repository) 
 
     fun refreshLiveData() = repository.getRefreshLiveData()
 
-    fun search(query: String? = null) {
-        if(factory?.query == query) return
-        factory?.query = query
-        pagedListLiveData?.value?.dataSource?.invalidate()
-    }
+    fun search(query: String? = null) = factory?.search(query)
 
     fun getDescription(apiKey : String, id: String): LiveData<Descripton> = repository.getDescription(apiKey, id)
 
-    override fun onCleared() {
+    fun clear() {
         repository.clear()
         factory = null
         pagedListLiveData = null
+    }
+
+    override fun onCleared() {
+        clear()
         super.onCleared()
     }
 }

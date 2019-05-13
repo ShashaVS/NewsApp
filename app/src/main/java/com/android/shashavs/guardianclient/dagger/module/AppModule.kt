@@ -5,6 +5,7 @@ import android.content.Context
 import com.android.shashavs.guardianclient.App
 import com.android.shashavs.guardianclient.dagger.scope.AppScope
 import com.android.shashavs.guardianclient.repository.room.AppDatabase
+import com.android.shashavs.guardianclient.repository.AppRepository
 import com.android.shashavs.guardianclient.repository.Repository
 import com.android.shashavs.guardianclient.repository.retrofit.ApiService
 import com.android.shashavs.guardianclient.repository.retrofit.Api
@@ -29,6 +30,6 @@ class AppModule {
 
     @AppScope
     @Provides
-    fun getRepository(apiService: ApiService, appDatabase: AppDatabase): Repository = Repository(apiService, appDatabase)
+    fun getRepository(apiService: ApiService, appDatabase: AppDatabase): Repository = AppRepository(apiService, appDatabase)
 
 }

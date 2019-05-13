@@ -7,12 +7,21 @@ class AppDataSourceFactory(private val repository: Repository,
                            private val apiKey: String) : DataSource.Factory<Int, News>() {
 
     private val TAG = "NetDataSourceFactory"
-    var query: String? = null
+    private var query: String? = null
+    private var dataSource : DataSource<Int, News>? = null
 
     override fun create(): DataSource<Int, News> {
-        return if(query.isNullOrEmpty())
+        dataSource = if(query.isNullOrEmpty())
             repository.cacheDataSource()
         else
             NetPositionalDataSource(repository, apiKey, query)
+
+        return dataSource!!
+    }
+
+    fun search(query: String? = null) {
+        if(this.query == query) return
+        this.query = query
+        dataSource?.invalidate()
     }
 }

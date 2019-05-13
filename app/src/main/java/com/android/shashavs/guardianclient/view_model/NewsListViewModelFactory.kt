@@ -8,5 +8,5 @@ import javax.inject.Provider
 
 class NewsListViewModelFactory @Inject constructor(private val repository: Provider<Repository>) : ViewModelProvider.Factory {
 
-    override fun <T : ViewModel?> create(modelClass: Class<T>): T = NewsListViewModel(repository.get()) as T
+    override fun <T : ViewModel?> create(modelClass: Class<T>): T = NewsViewModel(repository.get()) as T
 }

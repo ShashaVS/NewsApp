@@ -20,7 +20,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.shashavs.guardianclient.R
 
 import com.android.shashavs.guardianclient.base.BaseFragment
-import com.android.shashavs.guardianclient.view_model.NewsListViewModel
+import com.android.shashavs.guardianclient.view_model.NewsViewModel
 import com.android.shashavs.guardianclient.view_model.NewsListViewModelFactory
 import com.android.shashavs.guardianclient.repository.data_objects.News
 import kotlinx.android.synthetic.main.fragment_item_list.*
@@ -28,7 +28,7 @@ import javax.inject.Inject
 
 class NewsListFragment : BaseFragment() {
 
-    private lateinit var viewModel: NewsListViewModel
+    private lateinit var viewModel: NewsViewModel
     @Inject
     lateinit var viewModelFactory: NewsListViewModelFactory
     private var isTablet = false
@@ -37,7 +37,7 @@ class NewsListFragment : BaseFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         isTablet = isTablet()
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(NewsListViewModel::class.java)
+        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(NewsViewModel::class.java)
         viewModel.initRefresh(getString(R.string.api_key))
     }
 

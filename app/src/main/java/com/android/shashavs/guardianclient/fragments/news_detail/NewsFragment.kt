@@ -14,7 +14,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.shashavs.guardianclient.R
 import com.android.shashavs.guardianclient.base.BaseFragment
 import com.android.shashavs.guardianclient.repository.data_objects.Descripton
-import com.android.shashavs.guardianclient.view_model.NewsListViewModel
+import com.android.shashavs.guardianclient.view_model.NewsViewModel
 import com.android.shashavs.guardianclient.view_model.NewsListViewModelFactory
 import com.android.shashavs.guardianclient.repository.data_objects.News
 import com.squareup.picasso.Callback
@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 class NewsFragment : BaseFragment() {
 
-    private lateinit var viewModel: NewsListViewModel
+    private lateinit var viewModel: NewsViewModel
     @Inject
     lateinit var viewModelFactory: NewsListViewModelFactory
     private var position: Int? = null
@@ -33,7 +33,7 @@ class NewsFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(NewsListViewModel::class.java)
+        viewModel = ViewModelProviders.of(requireActivity(), viewModelFactory).get(NewsViewModel::class.java)
         arguments?.let {
             position = it.getInt("position")
             news = it.getSerializable("news") as News?
